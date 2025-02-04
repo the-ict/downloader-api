@@ -6,31 +6,10 @@ const User = require("../models/User.js")
 
 const createFile = async (req, res) => {
     try {
-        const { ip, port } = req.body
-        const formats = await getFormatId(req.body.url)
-        const downloadUrls = await getDownloadUrl(req.body.url, formats)
-        const fileName = req.body.name + Date.now() + ".png"
-
-        await generateThumbnail(downloadUrls[0].downloadUrl, fileName)
-
-        const getOne = await User.findOne({ user_id: req.body.user_id })
-        if (!getOne) return res.status(404).json({ message: "bunday user Mavjud emas !" })
-
-        const newFile = new File({
-            name: req.body.name,
-            image: fileName,
-            isSecret: req.body.isSecret,
-            user_id: req.body.user_id,
-            downloadUrl: downloadUrls
-        })
-
-        const savedFile = await newFile.save()
-
-        if (!savedFile) return res.status(400).json({
-            message: "Saqlashda muammo bo'ldi !"
-        })
-
-        res.status(200).json(savedFile)
+        const userIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress
+        console.log("userIp: ", userIp)
+        res.status(userIp)
+     
     } catch (error) {
         res.status(500).json(error)
     }
